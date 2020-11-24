@@ -4,7 +4,7 @@ import os
 import networkx as nx
 
 import utils
-
+import random
 
 def validate_file(path):
     """File must not exceed 100KB and must contain only numbers and spaces"""
