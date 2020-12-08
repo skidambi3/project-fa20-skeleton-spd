@@ -141,6 +141,32 @@ def solve(G, s):
     #         rooms[room(u)].append(rooms[room(v)].remove(v))
     #         # if len(room(v)) == 0:
     #         #     rooms.pop(room(v))
+    def get_happy_index(unassigned, lst, num_rooms):
+        happy_ind = None
+        happy_val = -1
+        stress_val = 1
+
+        happy_orig = calculate_happiness_for_room(lst, G)
+        stress_orig = calculate_stress_for_room(lst, G)
+
+        lst = [0] + lst
+
+        for i in unassigned:
+            lst[0] = i
+            
+            stress_cur = calculate_stress_for_room(lst, G) # < s / (num_rooms+1):
+            if stress_cur < s / (num_rooms+1):
+                happy_cur = calculate_happiness_for_room(lst, G)
+                
+                if happy_cur/(stress_cur+0.001) > happy_val/(stress_val+0.001):
+                    happy_val = happy_cur
+                    stress_val = stress_cur
+                    happy_ind = i
+            # if happy_val > happy_cur:
+                # if calculate_stress_for_room(lst, G) < s / (num_rooms+1):
+                #     happy_ind = i
+                #     happy_val = happy_cur
+        return happy_ind
 
     def get_stress_index(lst):
         stress_ind = 0
@@ -170,18 +196,40 @@ def solve(G, s):
     while len(unassigned) > 0:
         rooms[num_rooms] = []
         
-        for i in range(n):
+        while calculate_stress_for_room(rooms[num_rooms], G) < s / (num_rooms+1):
+            max_ind = get_happy_index(unassigned, rooms[num_rooms], num_rooms)
+            if max_ind == None:
+                break
+            rooms[num_rooms].append(max_ind)
+            unassigned.remove(max_ind)
+
+        # for i in unassigned:
             # If person can be added add them
-            if i in unassigned and calculate_stress_for_room(rooms[num_rooms] + [i], G) < s / (num_rooms+1):
-                rooms[num_rooms].append(i)
-                unassigned.remove(i)
+            # find the highest happiness that still yields valid result
+            
+            # if i in unassigned and calculate_stress_for_room(rooms[num_rooms] + [i], G) < s / (num_rooms+1):
+            #     rooms[num_rooms].append(i)
+            #     unassigned.remove(i)
         for ind in range(num_rooms):
-            # If previous room exceeds stress budget
+            # If any previous room exceeds stress budget, remove highest stress individuals
             while calculate_stress_for_room(rooms[ind], G) > s / (num_rooms+1):
                 min_ind = get_stress_index(rooms[ind])
                 unassigned.add(rooms[ind].pop(min_ind))
                 # unassigned.add(rooms[ind].pop())
                 ## fix this to be not random
+
+            ## delete below
+
+            while calculate_stress_for_room(rooms[ind], G) < s / (num_rooms+1):
+                max_ind = get_happy_index(unassigned, rooms[ind], num_rooms)
+                if max_ind == None:
+                    break
+                rooms[ind].append(max_ind)
+                unassigned.remove(max_ind)
+
+            ## delete above
+
+
         num_rooms += 1
 
     #while not is_valid_solution
