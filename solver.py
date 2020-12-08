@@ -232,8 +232,57 @@ def solve(G, s):
 
         num_rooms += 1
 
+    dic = convert_dictionary(rooms)
     #while not is_valid_solution
-    
+    rooms_dic = {}
+    for num in range(len(rooms)):
+        tmp = set()
+        for person in rooms[num]:
+            tmp.add(person)
+        rooms_dic[num] = tmp
+
+    condition = 0
+    while False:
+        #print('a')
+        for i in range(len(rooms)):
+            #print('b')
+            if condition:
+                break
+            for j in range(i, len(rooms)):
+                #print('c')
+                if condition:
+                    break
+
+                breaker = False
+                for a in rooms_dic[i]:
+                    adic = rooms_dic[i]
+                    a_happy = calculate_happiness_for_room(list(adic), G)
+                    adic.remove(a)
+
+                    for b in rooms_dic[j]:
+                        bdic = rooms_dic[j]
+                        b_happy = calculate_happiness_for_room(list(bdic), G)
+                        bdic.remove(b)
+
+                        adic.add(b)
+                        bdic.add(a)
+                        if calculate_stress_for_room(list(adic), G) < s / (num_rooms+1) and calculate_stress_for_room(list(bdic), G) < s / (num_rooms+1):
+                            if a_happy + b_happy < calculate_happiness_for_room(list(adic), G) + calculate_happiness_for_room(list(bdic), G):
+                                print('SWAP!!!!!')
+                                condition += 1
+                                breaker = True
+                                break
+
+                        adic.remove(b)
+                        bdic.remove(a)
+
+                        bdic.add(b)
+                    if breaker:
+                        break
+                    adic.add(a)
+            if breaker:
+                break
+        #break
         
     
         
