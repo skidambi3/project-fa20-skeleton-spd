@@ -36,11 +36,9 @@ while len(nodes):
 	random.shuffle(nodes)
 	room = nodes[0:k]
 	nodes = nodes[k:]
-
 	for i in room:
 		rooms[i] = r
 	r += 1
-
 	#initialize edges in room
 	for i in room:
 		for j in room:
